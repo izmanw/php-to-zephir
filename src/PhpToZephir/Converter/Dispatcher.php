@@ -204,7 +204,7 @@ class Dispatcher
         $this->classCollector = $classCollector;
         $this->logger = $logger;
 
-        return ltrim(str_replace("\n".self::noIndentToken, "\n", $this->pStmts($stmts, false)));
+        return /*ltrim(str_replace("\n".self::noIndentToken, "\n", */$this->pStmts($stmts, false);//));
     }
 
     /**
