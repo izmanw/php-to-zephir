@@ -50,10 +50,27 @@ class ArrayPrinter
      */
     public function convert(Expr\Array_ $node, $returnAsArray = false)
     {
+        static $depth;
         $collected = $this->assignManipulator->collectAssignInCondition($node->items);
         $node->items = $this->assignManipulator->transformAssignInConditionTest($node->items);
 
-        $collected->setExpr('['.$this->dispatcher->pCommaSeparated($node->items).']');
+        $tab = "    ";
+        $tab2 = "";
+        if (!empty($depth)) {
+            $tab2 = str_repeat($tab, $depth);
+            $tab .= $tab2;
+            $depth++;
+        } else {
+            $depth = 1;
+        }
+
+        if (count($node->items)) {
+            $collected->setExpr("[\n$tab" . $this->dispatcher->pImplode($node->items, ",\n$tab") . "\n$tab2]");
+        } else {
+            $collected->setExpr('[]');
+        }
+
+        $depth--;
 
         if ($returnAsArray === true) {
             return $collected;
