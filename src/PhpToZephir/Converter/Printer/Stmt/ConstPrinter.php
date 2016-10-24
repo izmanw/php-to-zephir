@@ -14,6 +14,6 @@ class ConstPrinter extends SimplePrinter
 
     public function convert(Stmt\Const_ $node)
     {
-        return 'const '.$this->dispatcher->pCommaSeparated($node->consts).';';
+        return 'const '.$this->dispatcher->pCommaSeparated($node->consts).';' . "\n";
     }
 }
