@@ -145,7 +145,7 @@ class ClassMethodPrinter
         if (!empty($vars)) {
             $var .= "\n    var ".implode(', ', $vars).";\n";
         }
-        
+
         // dirty...
         Printer\Expr\ArrayDimFetchPrinter::resetCreatedVars();
 
@@ -199,7 +199,7 @@ class ClassMethodPrinter
 
         foreach ($noFetcher->foreachNodes($node) as &$stmt) {
             if ($stmt['node'] instanceof Expr\Assign) {
-                if (($stmt['node']->var instanceof Expr\PropertyFetch) === false 
+                if (($stmt['node']->var instanceof Expr\PropertyFetch) === false
                  && ($stmt['node']->var instanceof Expr\StaticPropertyFetch) === false
                  && ($stmt['node']->var instanceof Expr\ArrayDimFetch) === false
                  && ($stmt['node']->var instanceof Expr\List_) === false) {
@@ -209,7 +209,7 @@ class ClassMethodPrinter
                 } elseif (($stmt['node']->var instanceof Expr\List_) === true) {
                     $varInList = array();
                     foreach ($stmt['node']->var->vars as $var) {
-                        if (null !== $var) { 
+                        if (null !== $var) {
                             $varInList[] = ucfirst($this->dispatcher->p($var));
                             if (($var instanceof Expr\ArrayDimFetch) === false) {
                                 $vars[] = $this->dispatcher->p($var);
@@ -239,16 +239,16 @@ class ClassMethodPrinter
                 }
             } elseif ($stmt['node'] instanceof Stmt\Catch_) {
                 $vars[] = $stmt['node']->var;
-            } elseif ($stmt['node'] instanceof Stmt\Return_ && $stmt['node']->expr instanceof Expr\Array_) {
+            } elseif (false && $stmt['node'] instanceof Stmt\Return_ && $stmt['node']->expr instanceof Expr\Array_) {
                 $vars[] = 'tmpArray'.md5(serialize($stmt['node']->expr->items));
             } elseif ($stmt['node'] instanceof Stmt\Static_) {
             	foreach ($stmt['node']->vars as $var) {
                 	$vars[] = $var->name;
             	}
-            } elseif ($stmt['node'] instanceof Arg && $stmt['node']->value instanceof Expr\Array_) {
+            } elseif (false && $stmt['node'] instanceof Arg && $stmt['node']->value instanceof Expr\Array_) {
             	 $vars[] = 'tmpArray'.md5(serialize($stmt['node']->value->items));
             }
-            
+
             if ($stmt['node'] instanceof Expr\ArrayDimFetch && !in_array("PhpParser\Node\Expr\ArrayDimFetch", $stmt['parentClass'])) {
                 $varCreatedInArray = $this->dispatcher->pExpr_ArrayDimFetch($stmt['node'], true);
                 foreach ($varCreatedInArray['vars'] as $var) {
