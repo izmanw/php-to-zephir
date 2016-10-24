@@ -28,7 +28,7 @@ class UnsetPrinter extends SimplePrinter
         	if ($var instanceof Expr\Variable) {
         		$unset .= 'let '.$this->dispatcher->p($var).' = null;'."\n";
         	} else {
-            	$unset .= 'unset '.$this->dispatcher->p($var).';'."\n";
+            	$unset .= 'unset '.$this->dispatcher->p($var).';';
         	}
         }
 
