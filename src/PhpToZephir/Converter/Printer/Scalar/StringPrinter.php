@@ -36,6 +36,7 @@ class StringPrinter extends SimplePrinter
      */
     private function pNoIndent($string)
     {
-        return str_replace("\n", "\n".Dispatcher::noIndentToken, $string);
+//        return $string;//str_replace("\n", "\n".Dispatcher::noIndentToken, $string);
+        return preg_replace('/\n\x20*/sxSX', " ", $string);
     }
 }
