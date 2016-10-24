@@ -43,14 +43,14 @@ class AssignManipulator
         foreach ($this->nodeFetcher->foreachNodes($node) as $stmtData) {
             $collected = $this->extract($stmtData['node'], $arrayDto, $stmtData['parentClass']);
         }
-        
+
         return $this->extract($node, $arrayDto);
     }
 
     /**
-     * @param mixed  $stmt
-     * @param ArrayDto  $arrayDto
-     * @param string $parentClass
+     * @param mixed $stmt
+     * @param ArrayDto $arrayDto
+     * @param array|string $parentClass
      *
      * @return array
      */
@@ -63,9 +63,9 @@ class AssignManipulator
             } else {
                 $arrayDto->addCollected($this->dispatcher->pExpr_Assign($stmt));
             }
-        } elseif ($this->isVarModification($stmt) && !in_array("PhpParser\Node\Expr\Assign", $parentClass)) {
+        } elseif ($this->isVarModification($stmt) && !in_array("PhpParser\\Node\\Expr\\Assign", $parentClass)) {
             $arrayDto->addCollected($this->dispatcher->p($stmt));
-        } elseif ($this->isVarCreation($stmt) && !in_array("PhpParser\Node\Expr\ArrayItem", $parentClass) && !in_array("PhpParser\Node\Expr\Assign", $parentClass)) {
+        } elseif (false && $this->isVarCreation($stmt) && !in_array("PhpParser\\Node\\Expr\\ArrayItem", $parentClass) && !in_array("PhpParser\Node\Expr\Assign", $parentClass)) {
             $arrayDto->addCollected('let tmpArray'.md5(serialize($stmt->items)).' = '.$this->dispatcher->p($stmt));
         }
 
@@ -73,8 +73,8 @@ class AssignManipulator
     }
 
     /**
-     * @param mixed  $primaryNode
-     * @param string $parentClass
+     * @param mixed $primaryNode
+     * @param array|string $parentClass
      *
      * @return mixed
      */
@@ -97,6 +97,10 @@ class AssignManipulator
             if ($primaryNode->var instanceof Expr\List_) {
                 $varName = '';
                 foreach ($primaryNode->var->vars as $listVar) {
+                    if (!$listVar) {
+                        $varName = 'tmpList' . md5(microtime(true));
+                        break;
+                    }
                     $varName .= ucfirst($listVar->name);
                 }
                 $primaryNode = new Expr\Variable("tmpList" . $varName);
@@ -105,7 +109,7 @@ class AssignManipulator
             }
         } elseif ($this->isVarModification($primaryNode)) {
             $primaryNode = $primaryNode->var;
-        } elseif ($this->isVarCreation($primaryNode) && !in_array("PhpParser\Node\Expr\ArrayItem", $parentClass) ) {
+        } elseif (false && $this->isVarCreation($primaryNode) && !in_array("PhpParser\\Node\\Expr\\ArrayItem", $parentClass) ) {
             $primaryNode = new Expr\Variable('tmpArray'.md5(serialize($primaryNode->items)));
         } else {
             if (is_array($primaryNode) === true) {
