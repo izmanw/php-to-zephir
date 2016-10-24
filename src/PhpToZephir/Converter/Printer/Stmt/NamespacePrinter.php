@@ -14,6 +14,6 @@ class NamespacePrinter extends SimplePrinter
 
     public function convert(Stmt\Namespace_ $node)
     {
-        return 'namespace '.implode('\\', $node->name->parts).';'."\n".$this->dispatcher->pStmts($node->stmts, false);
+        return "\n" . 'namespace '.implode('\\', $node->name->parts).';'."\n".$this->dispatcher->pStmts($node->stmts, false);
     }
 }
