@@ -1,5 +1,5 @@
 {
-	"name" : "fezfez/php-to-zephir",
+	"name" : "izmanw/php-to-zephir",
 	"description" : "Transform php code to zephir",
 	"type" : "library",
 	"authors" : [{
