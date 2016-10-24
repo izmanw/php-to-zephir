@@ -62,6 +62,7 @@ class AssignPrinter
     /**
      * @param Expr\Assign $node
      *
+     * @param bool $extract
      * @return string
      */
     public function convert(Expr\Assign $node, $extract = true)
@@ -70,7 +71,7 @@ class AssignPrinter
         $leftNode = $node->var;
         $operatorString = ' = ';
         $rightNode = $node->expr;
-        
+
         list($precedence, $associativity) = $this->dispatcher->getPrecedenceMap($type);
 
         if ($rightNode instanceof Expr\Array_) {
@@ -83,25 +84,25 @@ class AssignPrinter
 
             return (($extract === true) ? $collect->getCollected() : '') .
                 'let '.$this->dispatcher->pPrec($leftNode, $precedence, $associativity, -1)
-                .$operatorString.' '.$collect->getExpr();
+                .$operatorString.$collect->getExpr();
         } elseif (($rightNode instanceof Expr\MethodCall || $rightNode instanceof Expr\FuncCall) && ($leftNode instanceof Expr\List_) === false) {
             $collected = $this->convertCall($node, new ArrayDto());
 
             return $collected['extracted']->getCollected().
                 'let '.$this->dispatcher->pPrec($leftNode, $precedence, $associativity, -1)
-                .$operatorString.' '.$this->dispatcher->p($collected['node']->expr);
+                .$operatorString.$this->dispatcher->p($collected['node']->expr);
         } elseif ($rightNode instanceof Expr\BinaryOp\Concat) {
             $collected = $this->convertConcat($node->expr, new ArrayDto());
 
             return $collected['extracted']->getCollected().
                 'let '.$this->dispatcher->pPrec($leftNode, $precedence, $associativity, -1)
-                .$operatorString.' '.$this->dispatcher->p($collected['node']);
+                .$operatorString.$this->dispatcher->p($collected['node']);
         } elseif ($rightNode instanceof Expr\Ternary) {
             $collect = $this->dispatcher->pExpr_Ternary($rightNode, true);
 
             return $collect->getCollected().
                    'let '.$this->dispatcher->pPrec($leftNode, $precedence, $associativity, -1)
-            .$operatorString.' '.$collect->getExpr();
+            .$operatorString.$collect->getExpr();
         } elseif ($leftNode instanceof Expr\List_) {
             return $this->convertListStmtToAssign($node);
         } elseif ($leftNode instanceof Expr\ArrayDimFetch || $rightNode instanceof Expr\ArrayDimFetch) {
@@ -138,10 +139,10 @@ class AssignPrinter
             );
 
             return 'let '.$this->dispatcher->pPrec($leftNode, $precedence, $associativity, -1)
-                   .$operatorString.' '.$this->dispatcher->p($rightNode);
+                   .$operatorString.$this->dispatcher->p($rightNode);
         }
     }
-    
+
     private function convertConcat(Expr\BinaryOp\Concat $concat, ArrayDto $collected)
     {
         if ($concat->left instanceof Expr\BinaryOp\Concat) {
@@ -157,7 +158,7 @@ class AssignPrinter
 
         return $this->convertCall($concat, $collected);
     }
-    
+
     private function convertCall($node, ArrayDto $collected)
     {
         if (property_exists($node, 'left') === true && ($node->left instanceof Expr\MethodCall || $node->left  instanceof Expr\FuncCall)) {
@@ -260,7 +261,7 @@ class AssignPrinter
         $listVarName = str_replace(array('[', ']', '"'), '', $listVarName);
 
         $pList[] = 'let ' . $listVarName . ' = ' . $this->dispatcher->pPrec($rightNode, $precedence, $associativity, 1) . '';
-        
+
         foreach ($node->var->vars as $count => $var) {
             if (null === $var) {
                 $pList[] = '';
@@ -274,6 +275,7 @@ class AssignPrinter
 
     /**
      * @param Assign $rightNode
+     * @return array
      */
     private function findVarToAssign($rightNode, array $toAssign = array())
     {
@@ -287,9 +289,10 @@ class AssignPrinter
 
     /**
      * @param Assign $node
-     * @param Expr   $leftNode
-     * @param Expr   $rightNode
+     * @param Expr $leftNode
+     * @param Expr $rightNode
      * @param string $operatorString
+     * @return string
      */
     private function arrayDimFetchCase($node, $leftNode, $rightNode, $operatorString, $precedence, $associativity, $extract = true)
     {
@@ -336,7 +339,7 @@ class AssignPrinter
             if ($extract === true) {
                 $head .= $this->dispatcher->pPrec($rightNode, $precedence, $associativity, 1).";\n";
             }
-            
+
             $rightString = $this->dispatcher->p($rightNode->var);
         }
 
